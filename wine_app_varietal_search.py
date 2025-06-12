@@ -6,7 +6,7 @@ import os
 
 DB_FILE = 'wine_supplier_with_producer.db'
 
-st.set_page_config(page_title="Wine Supplier Explorer", layout="wide")
+st.set_page_config(page_title="Wine Supplier Search", layout="wide")
 st.title("🍷 Wine Supplier Search")
 
 if not os.path.exists(DB_FILE):
@@ -55,8 +55,11 @@ else:
         if name_filter:
             df = df[df['wine_name'].str.contains(name_filter, case=False, na=False)]
 
+        # ✅ Fix: Use either varietal dropdown or varietal search
         if varietal_filter and varietal_filter != 'All':
-            df = df[df['varietal'] == varietal_filter]
+            df = df[df['varietal'].str.lower() == varietal_filter.lower()]
+        elif varietal_search:
+            df = df[df['varietal'].str.lower().str.contains(varietal_search)]
 
         if producer_filter:
             df = df[df['producer'].str.contains(producer_filter, case=False, na=False)]
