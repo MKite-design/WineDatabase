@@ -151,10 +151,10 @@ st.markdown("""
 
 st.markdown("<div class='grid'>", unsafe_allow_html=True)
 
-for _, row in filtered_df.iterrows():
+for i, row in filtered_df.iterrows():
     is_shortlisted = row['wine_id'] in st.session_state.shortlist
 
-    # Render wine card (no shortlist button here yet)
+    # Display wine card
     st.markdown(f"""
     <div class='card'>
         <div class='card-title'>{row['producer']} {row['wine_name']}</div>
@@ -164,6 +164,15 @@ for _, row in filtered_df.iterrows():
         <div class='price'>💰 ${row['bottle_price']:.2f}</div>
     </div>
     """, unsafe_allow_html=True)
+
+    # Use a unique button key for each card
+    button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
+    if st.button(button_label, key=f"shortlist_btn_{row['wine_id']}_{i}"):
+        if is_shortlisted:
+            st.session_state.shortlist.remove(row['wine_id'])
+        else:
+            st.session_state.shortlist.add(row['wine_id'])
+
 
     # NEW: Streamlit-native shortlist button
     button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
