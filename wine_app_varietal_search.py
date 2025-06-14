@@ -112,8 +112,8 @@ else:
         (filtered_df["bottle_price"] >= price_min) & (filtered_df["bottle_price"] <= price_max)
     ]
 
-if varietals:
-    varietals_clean = [unidecode(v.lower()) for v in varietals]
+if varietal_selection:
+    varietals_clean = [unidecode(v.lower()) for v in varietal_selection]
     filtered_df = filtered_df[filtered_df["clean_varietal"].isin(varietals_clean)]
 if producers:
     filtered_df = filtered_df[filtered_df["producer"].isin(producers)]
