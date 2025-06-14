@@ -1,6 +1,8 @@
+
 import streamlit as st
 import pandas as pd
 import sqlite3
+from unidecode import unidecode
 
 st.set_page_config(layout="wide")
 st.title("🍷 Wine Listings")
@@ -9,13 +11,13 @@ st.title("🍷 Wine Listings")
 @st.cache_data
 def load_data():
     conn = sqlite3.connect("wine_supplier_with_producer.db")
-    query = """
+    query = '''
         SELECT w.wine_id, w.wine_name, w.vintage, w.varietal, w.region, w.producer,
                s.name AS supplier, p.bottle_price
         FROM wines w
         JOIN wine_prices p ON w.wine_id = p.wine_id
         JOIN suppliers s ON p.supplier_id = s.supplier_id
-    """
+    '''
     df = pd.read_sql_query(query, conn)
     conn.close()
     df.fillna({
@@ -28,10 +30,10 @@ def load_data():
         "bottle_price": 0.0
     }, inplace=True)
 
-    df["sort_name"] = df["producer"].str.lower() + " " + df["wine_name"].str.lower()
-    df["clean_varietal"] = df["varietal"].str.lower()
-    df["clean_producer"] = df["producer"].str.lower()
-    df["clean_wine_name"] = df["wine_name"].str.lower()
+    df["sort_name"] = df["producer"].apply(lambda x: unidecode(x).lower()) + " " + df["wine_name"].apply(lambda x: unidecode(x).lower())
+    df["clean_varietal"] = df["varietal"].apply(lambda x: unidecode(x).lower())
+    df["clean_producer"] = df["producer"].apply(lambda x: unidecode(x).lower())
+    df["clean_wine_name"] = df["wine_name"].apply(lambda x: unidecode(x).lower())
     df = df.sort_values("sort_name")
     return df.reset_index(drop=True)
 
@@ -53,7 +55,7 @@ with st.container():
 # --- SIDEBAR ADVANCED FILTERS ---
 with st.sidebar:
     st.header("⚙️ Advanced Filters")
-    price_min, price_max = st.slider("Price Range", 0.0, float(df["bottle_price"].max() + 100), (0.0, float(df["bottle_price"].max())))
+    price_min, price_max = st.slider("Price Range", 0.0, 1000.0, (0.0, 1000.0))
     varietals = st.multiselect("Varietal", sorted(df["varietal"].unique()))
     producers = st.multiselect("Producer", sorted(df["producer"].unique()))
     suppliers = st.multiselect("Supplier", sorted(df["supplier"].unique()))
@@ -61,7 +63,7 @@ with st.sidebar:
 filtered_df = df.copy()
 
 if wine_search:
-    wine_search_clean = wine_search.lower()
+    wine_search_clean = unidecode(wine_search.lower())
     filtered_df = filtered_df[
         filtered_df["clean_wine_name"].str.contains(wine_search_clean, na=False) |
         filtered_df["clean_producer"].str.contains(wine_search_clean, na=False)
@@ -72,7 +74,7 @@ filtered_df = filtered_df[
 ]
 
 if varietals:
-    varietals_clean = [v.lower() for v in varietals]
+    varietals_clean = [unidecode(v.lower()) for v in varietals]
     filtered_df = filtered_df[filtered_df["clean_varietal"].isin(varietals_clean)]
 if producers:
     filtered_df = filtered_df[filtered_df["producer"].isin(producers)]
@@ -92,11 +94,9 @@ elif sort_option == "Price Low-High":
 elif sort_option == "Price High-Low":
     filtered_df = filtered_df.sort_values("bottle_price", ascending=False)
 
-# Display count
-st.caption(f"Displaying {len(filtered_df)} of {len(df)} wines")
-
 # Display Grid - Responsive
-st.markdown("""<style>
+st.markdown("""
+<style>
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -146,13 +146,14 @@ st.markdown("""<style>
     font-size: 0.95rem;
   }
 }
-</style>""", unsafe_allow_html=True)
+</style>
+""", unsafe_allow_html=True)
 
 st.markdown("<div class='grid'>", unsafe_allow_html=True)
 
 for _, row in filtered_df.iterrows():
     is_shortlisted = row['wine_id'] in st.session_state.shortlist
-    html_card = f"""
+    st.markdown(f"""
     <div class='card'>
         <div class='card-title'>{row['producer']} {row['wine_name']}</div>
         <div class='card-sub'>{row['vintage']}</div>
@@ -165,8 +166,7 @@ for _, row in filtered_df.iterrows():
             </form>
         </div>
     </div>
-    """
-    st.markdown(html_card, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
     if st.session_state.get(f"shortlist_{row['wine_id']}"):
         if is_shortlisted:
             st.session_state.shortlist.remove(row['wine_id'])
