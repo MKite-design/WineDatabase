@@ -183,3 +183,13 @@ with st.sidebar:
             wine = df[df['wine_id'] == sid].iloc[0]
             st.write(f"{wine['producer']} {wine['wine_name']} ({wine['vintage']}) – ${wine['bottle_price']:.2f}")
         st.button("Clear Shortlist", on_click=lambda: st.session_state.shortlist.clear())
+
+  # --- CSV Export Button ---
+        export_df = df[df["wine_id"].isin(st.session_state.shortlist)].copy()
+        csv = export_df.to_csv(index=False)
+        st.download_button(
+            label="📥 Download Shortlist (CSV)",
+            data=csv,
+            file_name="wine_shortlist.csv",
+            mime="text/csv"
+        )
