@@ -32,7 +32,7 @@ def load_data():
 
     df["sort_name"] = df["producer"].apply(lambda x: unidecode(x).lower()) + " " + df["wine_name"].apply(lambda x: unidecode(x).lower())
     df["clean_varietal"] = df["varietal"].apply(lambda x: unidecode(x).lower())
-    def classify_wine_type(varietal):
+def classify_wine_type(varietal):
     varietal = varietal.lower()
     if any(x in varietal for x in ["shiraz", "pinot noir", "merlot", "cabernet", "tempranillo", "malbec"]):
         return "Red"
