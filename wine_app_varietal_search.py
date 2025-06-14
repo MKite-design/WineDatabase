@@ -20,6 +20,7 @@ def load_data():
     '''
     df = pd.read_sql_query(query, conn)
     conn.close()
+
     df.fillna({
         "wine_name": "",
         "vintage": "NV",
@@ -32,21 +33,23 @@ def load_data():
 
     df["sort_name"] = df["producer"].apply(lambda x: unidecode(x).lower()) + " " + df["wine_name"].apply(lambda x: unidecode(x).lower())
     df["clean_varietal"] = df["varietal"].apply(lambda x: unidecode(x).lower())
-def classify_wine_type(varietal):
-    varietal = varietal.lower()
-    if any(x in varietal for x in ["shiraz", "pinot noir", "merlot", "cabernet", "tempranillo", "malbec"]):
-        return "Red"
-    elif any(x in varietal for x in ["chardonnay", "sauvignon", "riesling", "semillon", "pinot gris", "vermentino"]):
-        return "White"
-    elif "rosé" in varietal or "rose" in varietal:
-        return "Rosé"
-    elif any(x in varietal for x in ["sparkling", "champagne", "prosecco", "methode", "cava"]):
-        return "Sparkling"
-    elif any(x in varietal for x in ["port", "sherry", "vermouth"]):
-        return "Fortified"
-    return "Other"
 
-df["wine_type"] = df["clean_varietal"].apply(classify_wine_type)
+    # Wine type classifier
+    def classify_wine_type(varietal):
+        varietal = varietal.lower()
+        if any(x in varietal for x in ["shiraz", "pinot noir", "merlot", "cabernet", "tempranillo", "malbec"]):
+            return "Red"
+        elif any(x in varietal for x in ["chardonnay", "sauvignon", "riesling", "semillon", "pinot gris", "vermentino"]):
+            return "White"
+        elif "rosé" in varietal or "rose" in varietal:
+            return "Rosé"
+        elif any(x in varietal for x in ["sparkling", "champagne", "prosecco", "methode", "cava"]):
+            return "Sparkling"
+        elif any(x in varietal for x in ["port", "sherry", "vermouth"]):
+            return "Fortified"
+        return "Other"
+
+    df["wine_type"] = df["clean_varietal"].apply(classify_wine_type)
 
     df["clean_producer"] = df["producer"].apply(lambda x: unidecode(x).lower())
     df["clean_wine_name"] = df["wine_name"].apply(lambda x: unidecode(x).lower())
