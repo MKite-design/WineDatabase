@@ -9,7 +9,7 @@ st.title("🍷 Wine Listings")
 
 # Load cleaned varietal mapping from CSV
 varietal_map_df = pd.read_csv("raw_varietals_for_cleaning.csv").dropna(subset=["varietal", "Clean Varietal"])
-varietal_map = dict(zip(varietal_map_df["varietal"].str.strip(), varietal_map_df["clean_varietal"].str.strip()))
+varietal_map = dict(zip(varietal_map_df["varietal"].str.strip(), varietal_map_df["Clean Varietal"].str.strip()))
 
 # Load data from SQLite
 @st.cache_data
