@@ -7,6 +7,10 @@ from unidecode import unidecode
 st.set_page_config(layout="wide")
 st.title("🍷 Wine Listings")
 
+# Load cleaned varietals mapping
+varietal_map_df = pd.read_csv("raw_varietals_for_cleaning.csv").dropna(subset=["varietal", "Clean Varietal"])
+varietal_map = dict(zip(varietal_map_df["varietal"].str.strip(), varietal_map_df["Clean Varietal"].str.strip()))
+
 # Load data from SQLite
 @st.cache_data
 def load_data():
@@ -32,7 +36,10 @@ def load_data():
     }, inplace=True)
 
     df["sort_name"] = df["producer"].apply(lambda x: unidecode(x).lower()) + " " + df["wine_name"].apply(lambda x: unidecode(x).lower())
-    df["clean_varietal"] = df["varietal"].apply(lambda x: unidecode(x).lower())
+    
+    # Apply cleaned varietal mapping
+    df["clean_varietal"] = df["varietal"].map(varietal_map).fillna(df["varietal"])
+    df["clean_varietal"] = df["clean_varietal"].apply(lambda x: unidecode(str(x)).lower())
 
     # Wine type classifier
     def classify_wine_type(varietal):
