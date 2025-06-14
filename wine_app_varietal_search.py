@@ -54,9 +54,7 @@ with st.container():
 # --- SIDEBAR ADVANCED FILTERS ---
 with st.sidebar:
     st.header("⚙️ Advanced Filters")
-    price_floor = float(df["bottle_price"].min())
-    price_ceiling = float(df["bottle_price"].max())
-    price_min, price_max = st.slider("Price Range", price_floor, price_ceiling, (price_floor, price_ceiling))
+    price_min, price_max = st.slider("Price Range", 0.0, float(df["bottle_price"].max() + 100), (0.0, float(df["bottle_price"].max())))
     varietals = st.multiselect("Varietal", sorted(df["varietal"].unique()))
     producers = st.multiselect("Producer", sorted(df["producer"].unique()))
     suppliers = st.multiselect("Supplier", sorted(df["supplier"].unique()))
@@ -82,8 +80,9 @@ if producers:
 if suppliers:
     filtered_df = filtered_df[filtered_df["supplier"].isin(suppliers)]
 if type_tags:
+    type_tags_clean = [unidecode(t.lower()) for t in type_tags]
     filtered_df = filtered_df[
-        filtered_df["clean_varietal"].apply(lambda v: any(t.lower() in v for t in type_tags))
+        filtered_df["clean_varietal"].apply(lambda v: any(t in v for t in type_tags_clean))
     ]
 
 if sort_option == "Producer A-Z":
@@ -95,10 +94,9 @@ elif sort_option == "Price Low-High":
 elif sort_option == "Price High-Low":
     filtered_df = filtered_df.sort_values("bottle_price", ascending=False)
 
-# Show wine count
-st.markdown(f"**Displaying {len(filtered_df)} of {len(df)} wines**")
-
 # Display Grid - Responsive
+st.markdown(f"<p style='margin-top:1rem'><strong>Displaying {len(filtered_df)} of {len(df)} wines</strong></p>", unsafe_allow_html=True)
+
 st.markdown("""<style>
 .grid {
   display: grid;
