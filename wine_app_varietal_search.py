@@ -243,5 +243,5 @@ with st.sidebar:
             file_name="wine_shortlist.csv",
             mime="text/csv"
         )
-        st.download_button(label="📥 Download Shortlist (CSV)",data=export_csv,file_name="wine_shortlist.csv",mime="text/csv")
+       
 
