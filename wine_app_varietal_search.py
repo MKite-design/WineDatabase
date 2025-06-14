@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import sqlite3
-from unidecode import unidecode
 
 st.set_page_config(layout="wide")
 st.title("🍷 Wine Listings")
@@ -29,10 +28,10 @@ def load_data():
         "bottle_price": 0.0
     }, inplace=True)
 
-    df["sort_name"] = df["producer"].apply(lambda x: unidecode(x).lower()) + " " + df["wine_name"].apply(lambda x: unidecode(x).lower())
-    df["clean_varietal"] = df["varietal"].apply(lambda x: unidecode(x).lower())
-    df["clean_producer"] = df["producer"].apply(lambda x: unidecode(x).lower())
-    df["clean_wine_name"] = df["wine_name"].apply(lambda x: unidecode(x).lower())
+    df["sort_name"] = df["producer"].str.lower() + " " + df["wine_name"].str.lower()
+    df["clean_varietal"] = df["varietal"].str.lower()
+    df["clean_producer"] = df["producer"].str.lower()
+    df["clean_wine_name"] = df["wine_name"].str.lower()
     df = df.sort_values("sort_name")
     return df.reset_index(drop=True)
 
@@ -62,7 +61,7 @@ with st.sidebar:
 filtered_df = df.copy()
 
 if wine_search:
-    wine_search_clean = unidecode(wine_search.lower())
+    wine_search_clean = wine_search.lower()
     filtered_df = filtered_df[
         filtered_df["clean_wine_name"].str.contains(wine_search_clean, na=False) |
         filtered_df["clean_producer"].str.contains(wine_search_clean, na=False)
@@ -73,16 +72,15 @@ filtered_df = filtered_df[
 ]
 
 if varietals:
-    varietals_clean = [unidecode(v.lower()) for v in varietals]
+    varietals_clean = [v.lower() for v in varietals]
     filtered_df = filtered_df[filtered_df["clean_varietal"].isin(varietals_clean)]
 if producers:
     filtered_df = filtered_df[filtered_df["producer"].isin(producers)]
 if suppliers:
     filtered_df = filtered_df[filtered_df["supplier"].isin(suppliers)]
 if type_tags:
-    type_tags_clean = [unidecode(t.lower()) for t in type_tags]
     filtered_df = filtered_df[
-        filtered_df["clean_varietal"].apply(lambda v: any(t in v for t in type_tags_clean))
+        filtered_df["clean_varietal"].apply(lambda v: any(t.lower() in v for t in type_tags))
     ]
 
 if sort_option == "Producer A-Z":
@@ -94,9 +92,10 @@ elif sort_option == "Price Low-High":
 elif sort_option == "Price High-Low":
     filtered_df = filtered_df.sort_values("bottle_price", ascending=False)
 
-# Display Grid - Responsive
-st.markdown(f"<p style='margin-top:1rem'><strong>Displaying {len(filtered_df)} of {len(df)} wines</strong></p>", unsafe_allow_html=True)
+# Display count
+st.caption(f"Displaying {len(filtered_df)} of {len(df)} wines")
 
+# Display Grid - Responsive
 st.markdown("""<style>
 .grid {
   display: grid;
