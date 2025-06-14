@@ -32,6 +32,22 @@ def load_data():
 
     df["sort_name"] = df["producer"].apply(lambda x: unidecode(x).lower()) + " " + df["wine_name"].apply(lambda x: unidecode(x).lower())
     df["clean_varietal"] = df["varietal"].apply(lambda x: unidecode(x).lower())
+    def classify_wine_type(varietal):
+    varietal = varietal.lower()
+    if any(x in varietal for x in ["shiraz", "pinot noir", "merlot", "cabernet", "tempranillo", "malbec"]):
+        return "Red"
+    elif any(x in varietal for x in ["chardonnay", "sauvignon", "riesling", "semillon", "pinot gris", "vermentino"]):
+        return "White"
+    elif "rosé" in varietal or "rose" in varietal:
+        return "Rosé"
+    elif any(x in varietal for x in ["sparkling", "champagne", "prosecco", "methode", "cava"]):
+        return "Sparkling"
+    elif any(x in varietal for x in ["port", "sherry", "vermouth"]):
+        return "Fortified"
+    return "Other"
+
+df["wine_type"] = df["clean_varietal"].apply(classify_wine_type)
+
     df["clean_producer"] = df["producer"].apply(lambda x: unidecode(x).lower())
     df["clean_wine_name"] = df["wine_name"].apply(lambda x: unidecode(x).lower())
     df = df.sort_values("sort_name")
@@ -81,9 +97,8 @@ if producers:
 if suppliers:
     filtered_df = filtered_df[filtered_df["supplier"].isin(suppliers)]
 if type_tags:
-    filtered_df = filtered_df[
-        filtered_df["clean_varietal"].apply(lambda v: any(t.lower() in v for t in type_tags))
-    ]
+    filtered_df = filtered_df[filtered_df["wine_type"].isin(type_tags)]
+
 
 if sort_option == "Producer A-Z":
     filtered_df = filtered_df.sort_values("sort_name")
