@@ -74,7 +74,13 @@ with st.container():
 # --- SIDEBAR ADVANCED FILTERS ---
 with st.sidebar:
     st.header("⚙️ Advanced Filters")
-    price_min, price_max = st.slider("Price Range", 0.0, 1000.0, (0.0, 1000.0))
+    max_price = float(df["bottle_price"].max()) + 10  # add buffer for slider headroom
+price_min, price_max = st.slider(
+    "Price Range",
+    0.0,
+    max_price,
+    (0.0, max_price)
+)
     varietals = st.multiselect("Varietal", sorted(df["varietal"].unique()))
     producers = st.multiselect("Producer", sorted(df["producer"].unique()))
     suppliers = st.multiselect("Supplier", sorted(df["supplier"].unique()))
