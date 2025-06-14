@@ -8,8 +8,8 @@ st.set_page_config(layout="wide")
 st.title("🍷 Wine Listings")
 
 # Load cleaned varietal mapping from CSV
-varietal_map_df = pd.read_csv("raw_varietals_for_cleaning.csv").dropna(subset=["varietal", "Clean Varietal"])
-varietal_map = dict(zip(varietal_map_df["varietal"].str.strip(), varietal_map_df["Clean Varietal"].str.strip()))
+varietal_map_df = pd.read_csv("raw_varietals_for_cleaning.csv").dropna(subset=["varietal", ""clean_varietal""])
+varietal_map = dict(zip(varietal_map_df["varietal"].str.strip(), varietal_map_df[""clean_varietal""].str.strip()))
 
 # Load data from SQLite
 @st.cache_data
@@ -57,7 +57,7 @@ def load_data():
             return "Fortified"
         return "Other"
 
-    df["wine_type"] = df["Clean Varietal"].apply(classify_wine_type)
+    df["wine_type"] = df[""clean_varietal""].apply(classify_wine_type)
 
     df["clean_producer"] = df["producer"].apply(lambda x: unidecode(x).lower())
     df["clean_wine_name"] = df["wine_name"].apply(lambda x: unidecode(x).lower())
@@ -89,7 +89,7 @@ with st.sidebar:
     max_price = float(df["bottle_price"].max()) + 10  # add buffer for slider headroom
     price_min, price_max = st.slider("Price Range",0.0,max_price,(0.0, max_price))
     
-    varietals = st.multiselect("Varietal", sorted(df["Clean Varietal"].unique()))
+    varietals = st.multiselect("Varietal", sorted(df[""clean_varietal""].unique()))
     producers = st.multiselect("Producer", sorted(df["producer"].unique()))
     suppliers = st.multiselect("Supplier", sorted(df["supplier"].unique()))
 
@@ -113,7 +113,7 @@ else:
 
 if varietals:
     varietals_clean = [unidecode(v.lower()) for v in varietals]
-    filtered_df = filtered_df[filtered_df["Clean Varietal"].isin(varietals_clean)]
+    filtered_df = filtered_df[filtered_df[""clean_varietal""].isin(varietals_clean)]
 if producers:
     filtered_df = filtered_df[filtered_df["producer"].isin(producers)]
 if suppliers:
