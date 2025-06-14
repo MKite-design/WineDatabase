@@ -74,6 +74,7 @@ with st.container():
 # --- SIDEBAR ADVANCED FILTERS ---
 with st.sidebar:
     st.header("⚙️ Advanced Filters")
+    under_50 = st.checkbox("💲 Show only wines under $50")
     max_price = float(df["bottle_price"].max()) + 10  # add buffer for slider headroom
     price_min, price_max = st.slider("Price Range",0.0,max_price,(0.0, max_price))
     varietals = st.multiselect("Varietal", sorted(df["varietal"].unique()))
@@ -89,9 +90,12 @@ if wine_search:
         filtered_df["clean_producer"].str.contains(wine_search_clean, na=False)
     ]
 
-filtered_df = filtered_df[
-    (filtered_df["bottle_price"] >= price_min) & (filtered_df["bottle_price"] <= price_max)
-]
+if under_50:
+    filtered_df = filtered_df[filtered_df["bottle_price"] <= 50]
+else:
+    filtered_df = filtered_df[
+        (filtered_df["bottle_price"] >= price_min) & (filtered_df["bottle_price"] <= price_max)
+    ]
 
 if varietals:
     varietals_clean = [unidecode(v.lower()) for v in varietals]
