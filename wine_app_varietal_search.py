@@ -225,10 +225,6 @@ with st.sidebar:
             st.write(f"{wine['producer']} {wine['wine_name']} ({wine['vintage']}) – ${wine['bottle_price']:.2f}")
         st.button("Clear Shortlist", on_click=lambda: st.session_state.shortlist.clear())
 # Export shortlist to CSV
-    if st.session_state.shortlist:
-       columns_to_export = [
-        "wine_name", "vintage", "clean_varietal", "region", "producer", "supplier", "bottle_price"
-        ]
         export_df = df[df["wine_id"].isin(st.session_state.shortlist)].copy()
         export_df = export_df[columns_to_export]
         export_df = export_df.rename(columns={
@@ -241,6 +237,13 @@ with st.sidebar:
             "bottle_price": "Price ($)"
         })
         export_csv = export_df.to_csv(index=False)
+        st.download_button(
+            label="📥 Download Shortlist (CSV)",
+            data=export_csv,
+            file_name="wine_shortlist.csv",
+            mime="text/csv"
+        )
+
     
         st.download_button(label="📥 Download Shortlist (CSV)",data=export_csv,file_name="wine_shortlist.csv",mime="text/csv")
 
