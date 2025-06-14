@@ -225,7 +225,7 @@ with st.sidebar:
             st.write(f"{wine['producer']} {wine['wine_name']} ({wine['vintage']}) – ${wine['bottle_price']:.2f}")
         st.button("Clear Shortlist", on_click=lambda: st.session_state.shortlist.clear())
 # Export shortlist to CSV
-               columns_to_export = [
+        columns_to_export = [
             "wine_name", "vintage", "clean_varietal", "region", "producer", "supplier", "bottle_price"
         ]
 
