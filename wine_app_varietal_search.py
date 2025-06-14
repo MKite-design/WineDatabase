@@ -89,7 +89,8 @@ with st.sidebar:
     max_price = float(df["bottle_price"].max()) + 10  # add buffer for slider headroom
     price_min, price_max = st.slider("Price Range",0.0,max_price,(0.0, max_price))
     
-    varietals = st.multiselect("Varietal", sorted(df["clean_varietal"].unique()))
+    pretty_varietals = sorted(set(v.title() for v in df["clean_varietal"].unique()))
+    varietal_selection = st.multiselect("Varietal", pretty_varietals)
     producers = st.multiselect("Producer", sorted(df["producer"].unique()))
     suppliers = st.multiselect("Supplier", sorted(df["supplier"].unique()))
 
