@@ -112,6 +112,9 @@ elif sort_option == "Price Low-High":
 elif sort_option == "Price High-Low":
     filtered_df = filtered_df.sort_values("bottle_price", ascending=False)
 
+# Show how many wines matched
+st.markdown(f"**Displaying {len(filtered_df)} of {len(df)} wines**")
+
 # Display Grid - Responsive
 st.markdown("""
 <style>
