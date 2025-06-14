@@ -165,18 +165,9 @@ for i, row in filtered_df.iterrows():
     </div>
     """, unsafe_allow_html=True)
 
-    # Use a unique button key for each card
+    # Unique shortlist button
     button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
     if st.button(button_label, key=f"shortlist_btn_{row['wine_id']}_{i}"):
-        if is_shortlisted:
-            st.session_state.shortlist.remove(row['wine_id'])
-        else:
-            st.session_state.shortlist.add(row['wine_id'])
-
-
-    # NEW: Streamlit-native shortlist button
-    button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
-    if st.button(button_label, key=f"shortlist_{row['wine_id']}"):
         if is_shortlisted:
             st.session_state.shortlist.remove(row['wine_id'])
         else:
@@ -192,13 +183,3 @@ with st.sidebar:
             wine = df[df['wine_id'] == sid].iloc[0]
             st.write(f"{wine['producer']} {wine['wine_name']} ({wine['vintage']}) – ${wine['bottle_price']:.2f}")
         st.button("Clear Shortlist", on_click=lambda: st.session_state.shortlist.clear())
-
-  # --- CSV Export Button ---
-        export_df = df[df["wine_id"].isin(st.session_state.shortlist)].copy()
-        csv = export_df.to_csv(index=False)
-        st.download_button(
-            label="📥 Download Shortlist (CSV)",
-            data=csv,
-            file_name="wine_shortlist.csv",
-            mime="text/csv"
-        )
