@@ -36,6 +36,11 @@ data = worksheet.get_all_records()
 # Convert it into a pandas DataFrame
 df_sheet = pd.DataFrame(data)
 
+# Ensure all values in 'vintage' are strings for Arrow compatibility
+if 'vintage' in df_sheet.columns:
+    df_sheet['vintage'] = df_sheet['vintage'].astype(str)
+
+
 # Load cleaned varietal mapping from CSV
 varietal_map_df = pd.read_csv("raw_varietals_for_cleaning.csv").dropna(subset=["varietal", "Clean Varietal"])
 varietal_map = dict(zip(varietal_map_df["varietal"].str.strip(), varietal_map_df["Clean Varietal"].str.strip()))
