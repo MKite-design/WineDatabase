@@ -235,10 +235,10 @@ for i, row in filtered_df.iterrows():
         <div class='card-sub'>{row['varietal']} – {row['region']}</div>
         <div class='card-sub'>Supplier: {row['supplier']}</div>
         <div class='price'>
-            <strong>LUC:</strong> ${row['bottle_price']:.2f}<br>
-            <strong>Bottle Price:</strong> ${row['calculated_bottle_price']}<br>
-            <strong>Glass Price:</strong> ${row['calculated_glass_price'] if row['calculated_glass_price'] != 'N/A' else 'N/A':.2f}<br>
-            <strong>Takeaway Price:</strong> ${row['calculated_takeaway_price']}
+            💲 <strong>LUC:</strong> ${row['bottle_price']:.2f}<br>
+            🍾 <strong>Bottle Price:</strong> ${row['calculated_bottle_price']}<br>
+            🥂 <strong>Glass Price:</strong> ${row['calculated_glass_price'] if row['calculated_glass_price'] != 'N/A' else 'N/A':.2f}<br>
+            📦 <strong>Takeaway Price:</strong> ${row['calculated_takeaway_price']}
     </div>
 
     """, unsafe_allow_html=True)
