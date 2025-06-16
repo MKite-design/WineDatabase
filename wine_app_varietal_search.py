@@ -337,10 +337,10 @@ st.markdown("""
     
 st.markdown("<div class='grid'>", unsafe_allow_html=True)
     
-    for i, row in filtered_df.iterrows():
+for i, row in filtered_df.iterrows():
         is_shortlisted = row['wine_id'] in st.session_state.shortlist
     
-    st.markdown(f"""
+st.markdown(f"""
         <div class='card'>
             <div class='card-title'>{row['producer']} {row['wine_name']}</div>
             <div class='card-sub'>{row['vintage']}</div>
