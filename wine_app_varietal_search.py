@@ -129,8 +129,9 @@ with tab1:
         pass
     
     elif page == "✏️ Edit Wines":
-        # Authorize with Google Sheets using secrets.toml
-gcp_creds = st.secrets["gcp_service_account"]
+
+# Authorize with Google Sheets using secrets.toml
+    gcp_creds = st.secrets["gcp_service_account"]
 
 # Authenticate with proper scopes
 scoped_creds = Credentials.from_service_account_info(
