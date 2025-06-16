@@ -116,7 +116,7 @@ def calculate_bottle_price(luc):
     return int(result)
 
 def calculate_glass_price(luc):
-    if np.isnan(luc) or luc <= 0:
+    if np.isnan(luc) or luc <= 0: or luc * 1.1 > 200:
         return "N/A"
     inc_price = luc * 1.1
     idx = np.searchsorted(price_tiers, luc, side="left") - 1
