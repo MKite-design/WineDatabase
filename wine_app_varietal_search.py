@@ -226,7 +226,7 @@ with st.sidebar:
         
     filtered_df = df.copy()
         
-        if wine_search:
+    if wine_search:
             wine_search_clean = unidecode(wine_search.lower())
             filtered_df = filtered_df[
                 filtered_df["clean_wine_name"].str.contains(wine_search_clean, na=False) |
