@@ -232,10 +232,10 @@ with col_max:
         "Max", min_value=0.0, value=float(df["bottle_price"].max() + 10), step=1.0, format="%.2f"
     )
     
-        pretty_varietals = sorted(set(v.title() for v in df["clean_varietal"].unique()))
-        varietal_selection = st.multiselect("Varietal", pretty_varietals)
-        producers = st.multiselect("Producer", sorted(df["producer"].unique()))
-        suppliers = st.multiselect("Supplier", sorted(df["supplier"].unique()))
+    pretty_varietals = sorted(set(v.title() for v in df["clean_varietal"].unique()))
+    varietal_selection = st.multiselect("Varietal", pretty_varietals)
+    producers = st.multiselect("Producer", sorted(df["producer"].unique()))
+    suppliers = st.multiselect("Supplier", sorted(df["supplier"].unique()))
     
     filtered_df = df.copy()
     
