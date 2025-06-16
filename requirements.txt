@@ -2,3 +2,4 @@ streamlit
 pandas
 openpyxl
 unidecode
+pip install gspread oauth2client
