@@ -272,16 +272,16 @@ if type_tags:
     
 if sort_option == "Producer A-Z":
         filtered_df = filtered_df.sort_values("sort_name")
-    elif sort_option == "Producer Z-A":
+elif sort_option == "Producer Z-A":
         filtered_df = filtered_df.sort_values("sort_name", ascending=False)
-    elif sort_option == "Price Low-High":
+elif sort_option == "Price Low-High":
         filtered_df = filtered_df.sort_values("bottle_price")
-    elif sort_option == "Price High-Low":
+elif sort_option == "Price High-Low":
         filtered_df = filtered_df.sort_values("bottle_price", ascending=False)
     
-    st.markdown(f"**Displaying {len(filtered_df)} of {len(df)} wines**")
+st.markdown(f"**Displaying {len(filtered_df)} of {len(df)} wines**")
     
-    st.markdown("""
+st.markdown("""
     <style>
     .grid {
       display: grid;
