@@ -130,35 +130,32 @@ with tab1:
     
     elif page == "✏️ Edit Wines":
 
-        # Authorize with Google Sheets using secrets.toml
-            gcp_creds = st.secrets["gcp_service_account"]
-        
-        # Authenticate with proper scopes
-        scoped_creds = Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"],
-            scopes=["https://www.googleapis.com/auth/spreadsheets", 
-                    "https://www.googleapis.com/auth/drive"
-                   ]
-        )
-        
-        gc = gspread.authorize(scoped_creds)
-        
-        
-        # Use the key from your sheet URL
-        # Example URL: https://docs.google.com/spreadsheets/d/**1H6guq90INPuSk49BfweRJ8zpPUCBLmHLNtVpVX-vThU**/edit
-        sheet_key = "1H6guq90INPuSk49BfweRJ8zpPUCBLmHLNtVpVX-vThU"
-        worksheet = gc.open_by_key(sheet_key).sheet1
-        
-        
-        # This pulls all rows of the Google Sheet as a list of dictionaries
-        data = worksheet.get_all_records()
-        
-        # Convert it into a pandas DataFrame
-        df_sheet = pd.DataFrame(data)
-        
-        # Ensure all values in 'vintage' are strings for Arrow compatibility
-        if 'vintage' in df_sheet.columns:
-            df_sheet['vintage'] = df_sheet['vintage'].astype(str)
+    # Authorize with Google Sheets using secrets.toml
+    gcp_creds = st.secrets["gcp_service_account"]
+    
+    # Authenticate with proper scopes
+    scoped_creds = Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"],
+    scopes=["https://www.googleapis.com/auth/spreadsheets", 
+    "https://www.googleapis.com/auth/drive"])
+            
+    gc = gspread.authorize(scoped_creds)
+            
+            
+    # Use the key from your sheet URL
+    sheet_key = "1H6guq90INPuSk49BfweRJ8zpPUCBLmHLNtVpVX-vThU"
+    worksheet = gc.open_by_key(sheet_key).sheet1
+            
+            
+    # This pulls all rows of the Google Sheet as a list of dictionaries
+    data = worksheet.get_all_records()
+            
+    # Convert it into a pandas DataFrame
+     df_sheet = pd.DataFrame(data)
+            
+    # Ensure all values in 'vintage' are strings for Arrow compatibility
+    if 'vintage' in df_sheet.columns:
+    df_sheet['vintage'] = df_sheet['vintage'].astype(str)
     
         st.header("✏️ Edit Existing Wine")
         df["display_name"] = df["wine_name"] + " (" + df["producer"] + ")"
