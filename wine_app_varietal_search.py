@@ -225,7 +225,7 @@ for i, row in filtered_df.iterrows():
         <div class='price'>
             <strong>LUC:</strong> ${row['bottle_price']:.2f}<br>
             <strong>Bottle Price:</strong> ${row['calculated_bottle_price']}<br>
-            <strong>Glass Price:</strong> {row['calculated_glass_price'] if row['calculated_glass_price'] != 'N/A' else 'N/A'}
+            <strong>Glass Price:</strong> ${row['calculated_glass_price'] if row['calculated_glass_price'] != 'N/A' else 'N/A':.2f}
     </div>
 
     """, unsafe_allow_html=True)
