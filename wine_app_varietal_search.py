@@ -252,6 +252,44 @@ for i, row in filtered_df.iterrows():
 
 st.markdown("</div>", unsafe_allow_html=True)
 
+# 🛠️ Add edit section here:
+with st.expander("✏️ Edit Existing Wine"):
+    wine_to_edit = st.selectbox("Select wine", df["wine_name"] + " (" + df["producer"] + ")", index=0)
+    selected_row = df[df["wine_name"] + " (" + df["producer"] + ")" == wine_to_edit].iloc[0]
+
+    with st.form("edit_wine_form"):
+        new_name = st.text_input("Wine Name", selected_row["wine_name"])
+        new_vintage = st.text_input("Vintage", selected_row["vintage"])
+        new_varietal = st.text_input("Varietal", selected_row["varietal"])
+        new_region = st.text_input("Region", selected_row["region"])
+        new_producer = st.text_input("Producer", selected_row["producer"])
+        new_price = st.number_input("LUC Price ($)", value=selected_row["bottle_price"], step=0.1)
+
+        submitted = st.form_submit_button("Update Wine")
+
+        if submitted:
+            conn = sqlite3.connect("wine_supplier_with_producer.db")
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                UPDATE wines
+                SET wine_name = ?, vintage = ?, varietal = ?, region = ?, producer = ?
+                WHERE wine_id = ?
+            """, (new_name, new_vintage, new_varietal, new_region, new_producer, selected_row["wine_id"]))
+
+            cursor.execute("""
+                UPDATE wine_prices
+                SET bottle_price = ?
+                WHERE wine_id = ?
+            """, (new_price, selected_row["wine_id"]))
+
+            conn.commit()
+            conn.close()
+
+            st.success("✅ Wine updated successfully!")
+            st.cache_data.clear()
+
+
 with st.sidebar:
     if st.session_state.shortlist:
         st.markdown("### 📝 Shortlist")
