@@ -13,13 +13,21 @@ gcp_creds = st.secrets["gcp_service_account"]
 # Authenticate with proper scopes
 scoped_creds = Credentials.from_service_account_info(
     st.secrets["gcp_service_account"],
-    scopes=["https://www.googleapis.com/auth/spreadsheets"]
+    scopes=["https://www.googleapis.com/auth/spreadsheets", 
+            "https://www.googleapis.com/auth/drive"
+           ]
 )
+
 gc = gspread.authorize(scoped_creds)
 
 # Replace with your actual Google Sheet name or URL
 SHEET_NAME = "WineDBMasterSheet"
 worksheet = gc.open(SHEET_NAME).sheet1  # You can also use .worksheet("Sheet2") if needed
+
+# Use the key from your sheet URL
+# Example URL: https://docs.google.com/spreadsheets/d/**1H6guq90INPuSk49BfweRJ8zpPUCBLmHLNtVpVX-vThU**/edit
+sheet_key = "1H6guq90INPuSk49BfweRJ8zpPUCBLmHLNtVpVX-vThU"
+worksheet = gc.open_by_key(sheet_key).sheet1
 
 
 st.set_page_config(layout="wide")
