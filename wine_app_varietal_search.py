@@ -30,6 +30,18 @@ sheet_key = "1H6guq90INPuSk49BfweRJ8zpPUCBLmHLNtVpVX-vThU"
 worksheet = gc.open_by_key(sheet_key).sheet1
 
 
+# This pulls all rows of the Google Sheet as a list of dictionaries
+data = worksheet.get_all_records()
+
+# Convert it into a pandas DataFrame
+df_sheet = pd.DataFrame(data)
+
+# Display it on the Streamlit app
+st.subheader("📋 Wines from Google Sheet")
+st.dataframe(df_sheet)
+
+
+
 st.set_page_config(layout="wide")
 st.title("🍇 Wine Listings")
 
