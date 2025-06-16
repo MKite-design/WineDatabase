@@ -379,6 +379,15 @@ if 'vintage' in df_sheet.columns:
                 mime="text/csv"
             )
 with tab2:
+    with tab2:
     st.subheader("📋 Wines from Google Sheet")
+
+    with st.spinner("Loading sheet..."):
+        df_sheet = get_google_sheet_df()
+
+    # Ensure all object columns are safely converted to string
+    for col in df_sheet.select_dtypes(include=["object", "int", "float"]).columns:
+        df_sheet[col] = df_sheet[col].astype(str)
+
     st.dataframe(df_sheet, use_container_width=True)
 
