@@ -357,22 +357,22 @@ st.markdown(f"""
     
         """, unsafe_allow_html=True)
     
-        button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
-        if st.button(button_label, key=f"shortlist_btn_{row['wine_id']}_{i}"):
-            if is_shortlisted:
-                st.session_state.shortlist.remove(row['wine_id'])
-            else:
-                st.session_state.shortlist.add(row['wine_id'])
+button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
+    if st.button(button_label, key=f"shortlist_btn_{row['wine_id']}_{i}"):
+        if is_shortlisted:
+            st.session_state.shortlist.remove(row['wine_id'])
+        else:
+            st.session_state.shortlist.add(row['wine_id'])
     
-    st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
     
-    with st.sidebar:
-        if st.session_state.shortlist:
-            st.markdown("### 📝 Shortlist")
-            for sid in st.session_state.shortlist:
-                wine = df[df['wine_id'] == sid].iloc[0]
-                st.write(f"{wine['producer']} {wine['wine_name']} ({wine['vintage']}) – ${wine['bottle_price']:.2f}")
-            st.button("Clear Shortlist", on_click=lambda: st.session_state.shortlist.clear())
+with st.sidebar:
+    if st.session_state.shortlist:
+        st.markdown("### 📝 Shortlist")
+        for sid in st.session_state.shortlist:
+            wine = df[df['wine_id'] == sid].iloc[0]
+            st.write(f"{wine['producer']} {wine['wine_name']} ({wine['vintage']}) – ${wine['bottle_price']:.2f}")
+        st.button("Clear Shortlist", on_click=lambda: st.session_state.shortlist.clear())
     
             columns_to_export = [
                 "wine_name", "vintage", "clean_varietal", "region", "producer", "supplier", "bottle_price"
