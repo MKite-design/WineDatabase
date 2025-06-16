@@ -66,6 +66,7 @@ df = load_data()
 price_tiers = [0, 5, 10, 15, 25, 35, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 700]
 bottle_multipliers = [3, 2.5, 2.5, 2.25, 2.15, 2.0, 1.9, 1.8, 1.7, 1.6, 1.6, 1.6, 1.6, 1.55, 1.5, 1.5, 1.45, 1.4, 1.4, 1.3, 1.3, 1.3, 1.3, 1.3]
 glass_multipliers = [2.2, 2.1, 2.05, 2.00, 1.95, 1.85, 1.80, 1.75, 1.70, 1.65, 1.6, 1.6, 1.6]  # Glass price multiplier only for <= $200
+takeaway_multipliers = [2, 1.8, 1.7, 1.65, 1.57, 1.54, 1.50, 1.48, 1.45, 1.42, 1.39, 1.36, 1.33, 1.3, 1.2, 1.2, 1.2, 1.2, 1.15, 1.15, 1.15, 1.15]
 
 def calculate_bottle_price(luc):
     if np.isnan(luc) or luc <= 0:
@@ -88,9 +89,20 @@ def calculate_glass_price(luc):
     glass_price = max(rounded_bottle_price / 4, 14)
     return round(glass_price, 2)
 
+def calculate_takeaway_price(luc):
+    if np.isnan(luc) or luc <= 0:
+        return "N/A"
+    inc_price = luc * 1.1
+    idx = np.searchsorted(price_tiers, luc, side="left") - 1
+    idx = min(idx, len(takeaway_multipliers) - 1)
+    multiplier = takeaway_multipliers[idx]
+    result = math.ceil(inc_price * multiplier / 10.0) * 10
+    return int(result)
+
 
 df["calculated_bottle_price"] = df["bottle_price"].apply(calculate_bottle_price)
 df["calculated_glass_price"] = df["bottle_price"].apply(calculate_glass_price)
+df["calculated_takeaway_price"] = df["bottle_price"].apply(calculate_takeaway_price)
 
 if "shortlist" not in st.session_state:
     st.session_state.shortlist = set()
@@ -226,6 +238,7 @@ for i, row in filtered_df.iterrows():
             <strong>LUC:</strong> ${row['bottle_price']:.2f}<br>
             <strong>Bottle Price:</strong> ${row['calculated_bottle_price']}<br>
             <strong>Glass Price:</strong> ${row['calculated_glass_price'] if row['calculated_glass_price'] != 'N/A' else 'N/A':.2f}
+            <strong>Takeaway Price:</strong> ${row['calculated_takeaway_price']}
     </div>
 
     """, unsafe_allow_html=True)
