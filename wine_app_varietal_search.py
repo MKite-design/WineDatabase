@@ -378,9 +378,9 @@ with st.sidebar:
                 "wine_name", "vintage", "clean_varietal", "region", "producer", "supplier", "bottle_price"
             ]
     
-            export_df = df[df["wine_id"].isin(st.session_state.shortlist)].copy()
-            export_df = export_df[columns_to_export]
-            export_df = export_df.rename(columns={
+    export_df = df[df["wine_id"].isin(st.session_state.shortlist)].copy()
+    export_df = export_df[columns_to_export]
+    export_df = export_df.rename(columns={
                 "wine_name": "Wine Name",
                 "vintage": "Vintage",
                 "clean_varietal": "Varietal",
