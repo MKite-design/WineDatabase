@@ -211,7 +211,9 @@ with tab1:
         with cols[1]:
             sort_option = st.selectbox("Sort By", ["Producer A-Z", "Producer Z-A", "Price Low-High", "Price High-Low"])
         with cols[2]:
-            type_tags = st.multiselect("Wine Type", ["Red", "White", "Rosé", "Sparkling", "Fortified"])
+            type_tags = st.multiselect("Wine Type", ["Red", "White", "Rosé", "Sparkling", "Fortified","Orange"])
+        only_shortlisted = st.checkbox("📌 Show Only Shortlisted Wines")
+
     
     with st.sidebar:
         st.header("⚙️ Advanced Filters")
@@ -225,6 +227,13 @@ with st.sidebar:
     suppliers = st.multiselect("Supplier", sorted(df["supplier"].unique()))
         
     filtered_df = df.copy()
+    if only_shortlisted:
+        if st.session_state.shortlist:
+            filtered_df = filtered_df[filtered_df["wine_id"].isin(st.session_state.shortlist)]
+        else:
+            filtered_df = filtered_df.iloc[0:0]  # show empty DataFrame if no shortlist
+
+
         
     if wine_search:
             wine_search_clean = unidecode(wine_search.lower())
