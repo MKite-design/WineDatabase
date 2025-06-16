@@ -219,12 +219,12 @@ with tab1:
         under_50 = st.checkbox("💲 Show only wines under $50")
         over_500 = st.checkbox("💰 Show only wines over $500")
 with st.sidebar:
-        pretty_varietals = sorted(set(v.title() for v in df["clean_varietal"].unique()))
-        varietal_selection = st.multiselect("Varietal", pretty_varietals)
-        producers = st.multiselect("Producer", sorted(df["producer"].unique()))
-        suppliers = st.multiselect("Supplier", sorted(df["supplier"].unique()))
+    pretty_varietals = sorted(set(v.title() for v in df["clean_varietal"].unique()))
+    varietal_selection = st.multiselect("Varietal", pretty_varietals)
+    producers = st.multiselect("Producer", sorted(df["producer"].unique()))
+    suppliers = st.multiselect("Supplier", sorted(df["supplier"].unique()))
         
-        filtered_df = df.copy()
+    filtered_df = df.copy()
         
         if wine_search:
             wine_search_clean = unidecode(wine_search.lower())
