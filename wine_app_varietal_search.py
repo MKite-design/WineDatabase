@@ -361,11 +361,11 @@ for i, row in filtered_df.iterrows():
     
 # Button for shortlisting
     button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
-    if st.button(button_label, key=f"shortlist_btn_{wine_id}_{i}"):
+    if st.button(button_label, key=f"shortlist_btn_{wine_name}_{i}"):
         if is_shortlisted:
-            st.session_state.shortlist.remove(wine_id)
+            st.session_state.shortlist.remove(wine_name)
         else:
-            st.session_state.shortlist.add(wine_id)
+            st.session_state.shortlist.add(wine_name)
 
     st.markdown("</div>", unsafe_allow_html=True)
 
