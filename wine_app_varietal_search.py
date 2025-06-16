@@ -65,7 +65,7 @@ df = load_data()
 
 price_tiers = [0, 5, 10, 15, 25, 35, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 700]
 bottle_multipliers = [3, 2.5, 2.5, 2.25, 2.15, 2.0, 1.9, 1.8, 1.7, 1.6, 1.6, 1.6, 1.6, 1.55, 1.5, 1.5, 1.45, 1.4, 1.4, 1.3, 1.3, 1.3, 1.3, 1.3]
-glass_multipliers = [1.25 if t <= 200 else None for t in price_tiers]  # Glass price multiplier only for <= $200
+glass_multipliers = [2.2, 2.1, 2.05, 2.00, 1.95, 1.85, 1.80, 1.75, 1.70, 1.65, 1.6, 1.6, 1.6]  # Glass price multiplier only for <= $200
 
 def calculate_bottle_price(luc):
     if np.isnan(luc) or luc <= 0:
@@ -80,13 +80,14 @@ def calculate_bottle_price(luc):
 def calculate_glass_price(luc):
     if np.isnan(luc) or luc <= 0:
         return "N/A"
-    idx = np.searchsorted(price_tiers, luc, side="right") - 1
-    multiplier = glass_multipliers[idx]
-    if multiplier is None:
-        return "N/A"
     inc_price = luc * 1.1
-    result = math.ceil(inc_price * multiplier / 1.0)  # round up to nearest dollar
-    return int(result)
+    idx = np.searchsorted(price_tiers, luc, side="right") - 1
+    idx = min(idx, len(glass_multipliers) - 1)
+    multiplier = glass_multipliers[idx]
+    bottle_price = math.ceil(inc_price * multiplier / 10.0) * 10
+    glass_price = max(bottle_price / 4, 14)
+    return int(round(glass_price))
+
 
 df["calculated_bottle_price"] = df["bottle_price"].apply(calculate_bottle_price)
 df["calculated_glass_price"] = df["bottle_price"].apply(calculate_glass_price)
