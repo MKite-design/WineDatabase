@@ -10,7 +10,7 @@ from google.oauth2.service_account import Credentials
 # Authorize with Google Sheets using secrets.toml
 gcp_creds = st.secrets["gcp_service_account"]
 scoped_creds = Credentials.from_service_account_info(
-    gcp_creds,
+    st.secrets["gcp_service_account"],
     scopes=["https://www.googleapis.com/auth/spreadsheets"]
 )
 gc = gspread.authorize(scoped_creds)
