@@ -359,12 +359,12 @@ for i, row in filtered_df.iterrows():
     
         """, unsafe_allow_html=True)
     
-button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
-if st.button(button_label, key=f"shortlist_btn_{row['wine_id']}_{i}"):
-        if is_shortlisted:
-            st.session_state.shortlist.remove(row['wine_id'])
-        else:
-            st.session_state.shortlist.add(row['wine_id'])
+    button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
+        if st.button(button_label, key=f"shortlist_btn_{row['wine_id']}_{i}"):
+            if is_shortlisted:
+                st.session_state.shortlist.remove(row['wine_id'])
+            else:
+                st.session_state.shortlist.add(row['wine_id'])
     
 st.markdown("</div>", unsafe_allow_html=True)
     
