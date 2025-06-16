@@ -7,6 +7,9 @@ import numpy as np
 import gspread
 from google.oauth2.service_account import Credentials
 
+st.set_page_config(layout="wide")
+st.title("🍇 Wine Listings")
+
 # Authorize with Google Sheets using secrets.toml
 gcp_creds = st.secrets["gcp_service_account"]
 
@@ -39,11 +42,6 @@ df_sheet = pd.DataFrame(data)
 # Display it on the Streamlit app
 st.subheader("📋 Wines from Google Sheet")
 st.dataframe(df_sheet)
-
-
-
-st.set_page_config(layout="wide")
-st.title("🍇 Wine Listings")
 
 # Load cleaned varietal mapping from CSV
 varietal_map_df = pd.read_csv("raw_varietals_for_cleaning.csv").dropna(subset=["varietal", "Clean Varietal"])
