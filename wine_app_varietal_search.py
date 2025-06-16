@@ -390,14 +390,14 @@ with st.sidebar:
                 "bottle_price": "Price ($)"
             })
     
-            export_csv = export_df.to_csv(index=False)
+    export_csv = export_df.to_csv(index=False)
     
-            st.download_button(
-                label="📅 Download Shortlist (CSV)",
-                data=export_csv,
-                file_name="wine_shortlist.csv",
-                mime="text/csv"
-            )
+    st.download_button(
+            label="📅 Download Shortlist (CSV)",
+            data=export_csv,
+            file_name="wine_shortlist.csv",
+            mime="text/csv"
+        )
 with tab2:
     with tab2:
         st.subheader("📋 Wines from Google Sheet")
