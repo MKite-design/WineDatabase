@@ -219,8 +219,13 @@ with tab1:
         under_50 = st.checkbox("💲 Show only wines under $50")
         over_500 = st.checkbox("💰 Show only wines over $500")
     
-        max_price = float(df["bottle_price"].max()) + 10
-        price_min, price_max = st.slider("Price Range", 0.0, max_price, (0.0, max_price))
+        st.markdown("**Price Range (LUC $)**")
+            col_min, col_max = st.columns(2)
+            with col_min:
+            price_min = st.number_input("Min", min_value=0.0, value=0.0, step=1.0, format="%.2f")
+            with col_max:
+            price_max = st.number_input("Max", min_value=0.0, value=float(df["bottle_price"].max() + 10), step=1.0, format="%.2f")
+
     
         pretty_varietals = sorted(set(v.title() for v in df["clean_varietal"].unique()))
         varietal_selection = st.multiselect("Varietal", pretty_varietals)
@@ -236,14 +241,17 @@ with tab1:
             filtered_df["clean_producer"].str.contains(wine_search_clean, na=False)
         ]
     
-    if under_50 and not over_500:
-        filtered_df = filtered_df[filtered_df["bottle_price"] <= 50]
-    elif over_500 and not under_50:
-        filtered_df = filtered_df[filtered_df["bottle_price"] > 500]
-    else:
-        filtered_df = filtered_df[
-            (filtered_df["bottle_price"] >= price_min) & (filtered_df["bottle_price"] <= price_max)
+  # Apply checkbox filters
+    if under_50:
+    filtered_df = filtered_df[filtered_df["bottle_price"] <= 50]
+        if over_500:
+    filtered_df = filtered_df[filtered_df["bottle_price"] > 500]
+
+# Apply box-based price range filter
+            filtered_df = filtered_df[
+    (filtered_df["bottle_price"] >= price_min) & (filtered_df["bottle_price"] <= price_max)
         ]
+
     
     if varietal_selection:
         varietals_clean = [unidecode(v.lower()) for v in varietal_selection]
