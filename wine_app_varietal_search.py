@@ -100,7 +100,7 @@ def load_data():
 
 df = load_data()
 
-tab1, tab2 = st.tabs(["🍷 Wine Browser", "📋 Sheet Preview"])
+tab1, tab2 = st.tabs(["🍷 Wine Browser", "📋 Google Sheet Debugging"])
 with tab1:
 
     price_tiers = [0, 5, 10, 15, 25, 35, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 700]
