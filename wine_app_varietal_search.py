@@ -43,6 +43,14 @@ varietal_map = dict(zip(varietal_map_df["varietal"].str.strip(), varietal_map_df
 
 # Load data from SQLite
 @st.cache_data
+def get_google_sheet_df():
+    worksheet = gc.open_by_key(sheet_key).sheet1
+    data = worksheet.get_all_records()
+    df_sheet = pd.DataFrame(data)
+    for col in df_sheet.columns:
+        df_sheet[col] = df_sheet[col].astype(str)
+    return df_sheet
+    
 def load_data():
     conn = sqlite3.connect("wine_supplier_with_producer.db")
     query = '''
