@@ -362,9 +362,9 @@ for i, row in filtered_df.iterrows():
  # 🔘 Replace button with instant checkbox
     toggle = st.checkbox("Shortlist", value=is_shortlisted, key=f"shortlist_checkbox_{wine_id}_{i}")
     if toggle and not is_shortlisted:
-        st.session_state.shortlist.add(wine_id)
+        st.session_state.shortlist.add(row['wine_id'])
     elif not toggle and is_shortlisted:
-        st.session_state.shortlist.remove(wine_id)
+        st.session_state.shortlist.remove(row['wine_id'])
 
     st.markdown("</div>", unsafe_allow_html=True)
 
