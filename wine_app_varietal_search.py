@@ -260,17 +260,17 @@ filtered_df = filtered_df[
 ]
 
     
-    if varietal_selection:
+if varietal_selection:
         varietals_clean = [unidecode(v.lower()) for v in varietal_selection]
         filtered_df = filtered_df[filtered_df["clean_varietal"].isin(varietals_clean)]
-    if producers:
+if producers:
         filtered_df = filtered_df[filtered_df["producer"].isin(producers)]
-    if suppliers:
+if suppliers:
         filtered_df = filtered_df[filtered_df["supplier"].isin(suppliers)]
-    if type_tags:
+if type_tags:
         filtered_df = filtered_df[filtered_df["wine_type"].isin(type_tags)]
     
-    if sort_option == "Producer A-Z":
+if sort_option == "Producer A-Z":
         filtered_df = filtered_df.sort_values("sort_name")
     elif sort_option == "Producer Z-A":
         filtered_df = filtered_df.sort_values("sort_name", ascending=False)
