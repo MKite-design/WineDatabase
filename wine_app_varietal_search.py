@@ -68,9 +68,13 @@ df = load_data()
 
 import numpy as np
 
-# Define tier thresholds and corresponding bottle multipliers from Excel
-price_tiers = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
-bottle_multipliers = [2.4, 2.3, 2.2, 2.1, 2.0, 1.95, 1.9, 1.85, 1.8, 1.75,1.7, 1.65, 1.6, 1.575, 1.55, 1.525, 1.5, 1.475, 1.45, 1.425, 1.4]
+# Define price tiers and corresponding multipliers
+    price_tiers = [5, 10, 15, 25, 35, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 700]
+    multipliers = [2.5, 2.5, 2.25, 2.15, 2.0, 1.9, 1.8, 1.7, 1.6, 1.6, 1.6, 1.6, 1.55, 1.5, 1.5, 1.45, 1.4, 1.4, 1.3, 1.3, 1.3, 1.3, 1.3]
+
+applicable_index = max([i for i, t in enumerate(price_tiers) if luc >= t], default=0)
+    multiplier = multipliers[applicable_index]
+    return math.ceil(inc_price * multiplier / 10.0) * 10  # Round up to nearest 10
 
 # Function to calculate bottle price using bracketed multipliers
 def calculate_bottle_price(luc_inc):
@@ -82,7 +86,8 @@ def calculate_bottle_price(luc_inc):
     result = np.ceil(luc_inc * multiplier / 10) * 10  # Excel ROUNDUP(..., -1)
     return int(result)
 
-df["calculated_bottle_price"] = df["bottle_price"].apply(calculate_bottle_price)
+df["inc_price"] = df["bottle_price"] * 1.1  # LUC to Inc Price
+df["calculated_bottle_price"] = df["inc_price"].apply(calculate_bottle_price)
 
 if "shortlist" not in st.session_state:
     st.session_state.shortlist = set()
