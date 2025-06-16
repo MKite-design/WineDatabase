@@ -16,7 +16,7 @@ scoped_creds = Credentials.from_service_account_info(
 gc = gspread.authorize(scoped_creds)
 
 # Replace with your actual Google Sheet name or URL
-SHEET_NAME = "https://docs.google.com/spreadsheets/d/1H6guq90INPuSk49BfweRJ8zpPUCBLmHLNtVpVX-vThU/edit?gid=0#gid=0"
+SHEET_NAME = "WineDBMasterSheet"
 worksheet = gc.open(SHEET_NAME).sheet1  # You can also use .worksheet("Sheet2") if needed
 
 
