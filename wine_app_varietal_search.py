@@ -246,16 +246,18 @@ with col_max:
             filtered_df["clean_producer"].str.contains(wine_search_clean, na=False)
         ]
     
-  # Apply checkbox filters
-    if under_50:
+# Apply checkbox filters
+if under_50:
     filtered_df = filtered_df[filtered_df["bottle_price"] <= 50]
-        if over_500:
+
+if over_500:
     filtered_df = filtered_df[filtered_df["bottle_price"] > 500]
 
 # Apply box-based price range filter
-            filtered_df = filtered_df[
-    (filtered_df["bottle_price"] >= price_min) & (filtered_df["bottle_price"] <= price_max)
-        ]
+filtered_df = filtered_df[
+    (filtered_df["bottle_price"] >= price_min) &
+    (filtered_df["bottle_price"] <= price_max)
+]
 
     
     if varietal_selection:
