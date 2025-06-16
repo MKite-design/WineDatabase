@@ -293,9 +293,9 @@ for i, row in filtered_df.iterrows():
         <div class='card-sub'>Supplier: {row['supplier']}</div>
         <div class='price'>
             💲 <strong>LUC:</strong> {safe_float_str(row.get('bottle_price'))}<br>
-            🍾 <strong>Bottle Price:</strong> {row.get('calculated_bottle_price', 'N/A')}<br>
+            🍾 <strong>Bottle Price:</strong> {safe_float_str(row.get('calculated_bottle_price'))}<br>
             🥂 <strong>Glass Price:</strong> {safe_float_str(row.get('calculated_glass_price'))}<br>
-            📦 <strong>Takeaway Price:</strong> {row.get('calculated_takeaway_price', 'N/A')}
+            📦 <strong>Takeaway Price:</strong> {safe_float_str(row.get('calculated_takeaway_price'))}
 </div>
 
 
