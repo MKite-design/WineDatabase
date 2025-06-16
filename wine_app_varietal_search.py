@@ -377,7 +377,7 @@ with tab1:
             )
 with tab2:
     with tab2:
-    st.subheader("📋 Wines from Google Sheet")
+        st.subheader("📋 Wines from Google Sheet")
 
     with st.spinner("Loading sheet..."):
         df_sheet = get_google_sheet_df()
