@@ -86,7 +86,7 @@ def calculate_glass_price(luc):
     multiplier = glass_multipliers[idx]
     rounded_bottle_price = math.ceil(inc_price * multiplier / 10.0) * 10
     glass_price = max(rounded_bottle_price / 4, 14)
-     return round(glass_price, 2)
+    return round(glass_price, 2)
 
 
 df["calculated_bottle_price"] = df["bottle_price"].apply(calculate_bottle_price)
