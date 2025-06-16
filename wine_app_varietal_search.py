@@ -99,6 +99,11 @@ def calculate_takeaway_price(luc):
     result = math.ceil(inc_price * multiplier / 10.0) * 10
     return int(result)
 
+def safe_float_str(value):
+    try:
+        return f"${float(value):.2f}"
+    except (ValueError, TypeError):
+        return "N/A"
 
 df["calculated_bottle_price"] = df["bottle_price"].apply(calculate_bottle_price)
 df["calculated_glass_price"] = df["bottle_price"].apply(calculate_glass_price)
@@ -280,11 +285,12 @@ for i, row in filtered_df.iterrows():
         <div class='card-sub'>{row['varietal']} – {row['region']}</div>
         <div class='card-sub'>Supplier: {row['supplier']}</div>
         <div class='price'>
-            💲 <strong>LUC:</strong> ${row['bottle_price']:.2f}<br>
-            🍾 <strong>Bottle Price:</strong> ${row['calculated_bottle_price']}<br>
-            🥂 <strong>Glass Price:</strong> ${float(row['calculated_glass_price']):.2f}<br>
-            📦 <strong>Takeaway Price:</strong> ${row['calculated_takeaway_price']}
-    </div>
+            💲 <strong>LUC:</strong> ${safe_float(row.get('bottle_price')):.2f}<br>
+            🍾 <strong>Bottle Price:</strong> ${row.get('calculated_bottle_price', 'N/A')}<br>
+            🥂 <strong>Glass Price:</strong> {safe_float_str(row.get('calculated_glass_price'))}<br>
+            📦 <strong>Takeaway Price:</strong> ${row.get('calculated_takeaway_price', 'N/A')}
+</div>
+
 
     """, unsafe_allow_html=True)
 
