@@ -1,11 +1,12 @@
-
 import streamlit as st
 import pandas as pd
 import sqlite3
 from unidecode import unidecode
+import math
+import numpy as np
 
 st.set_page_config(layout="wide")
-st.title("🍷 Wine Listings")
+st.title("🍇 Wine Listings")
 
 # Load cleaned varietal mapping from CSV
 varietal_map_df = pd.read_csv("raw_varietals_for_cleaning.csv").dropna(subset=["varietal", "Clean Varietal"])
@@ -36,13 +37,10 @@ def load_data():
     }, inplace=True)
 
     df["sort_name"] = df["producer"].apply(lambda x: unidecode(x).lower()) + " " + df["wine_name"].apply(lambda x: unidecode(x).lower())
-    
-    # Apply cleaned varietal mapping to create clean_varietal column
+
     df["clean_varietal"] = df["varietal"].map(varietal_map).fillna(df["varietal"])
     df["clean_varietal"] = df["clean_varietal"].apply(lambda x: unidecode(str(x)).lower())
 
-
-    # Wine type classifier
     def classify_wine_type(varietal):
         varietal = varietal.lower()
         if any(x in varietal for x in ["shiraz", "pinot noir", "merlot", "cabernet", "tempranillo", "malbec"]):
@@ -58,7 +56,6 @@ def load_data():
         return "Other"
 
     df["wine_type"] = df["clean_varietal"].apply(classify_wine_type)
-
     df["clean_producer"] = df["producer"].apply(lambda x: unidecode(x).lower())
     df["clean_wine_name"] = df["wine_name"].apply(lambda x: unidecode(x).lower())
     df = df.sort_values("sort_name")
@@ -66,33 +63,24 @@ def load_data():
 
 df = load_data()
 
-import numpy as np
+price_tiers = [0, 5, 10, 15, 25, 35, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 700]
+bottle_multipliers = [3, 2.5, 2.5, 2.25, 2.15, 2.0, 1.9, 1.8, 1.7, 1.6, 1.6, 1.6, 1.6, 1.55, 1.5, 1.5, 1.45, 1.4, 1.4, 1.3, 1.3, 1.3, 1.3, 1.3]
 
-# Define price tiers and corresponding multipliers
-price_tiers = [5, 10, 15, 25, 35, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 700]
-multipliers = [2.5, 2.5, 2.25, 2.15, 2.0, 1.9, 1.8, 1.7, 1.6, 1.6, 1.6, 1.6, 1.55, 1.5, 1.5, 1.45, 1.4, 1.4, 1.3, 1.3, 1.3, 1.3, 1.3]
-
-applicable_index = max([i for i, t in enumerate(price_tiers) if luc >= t], default=0)
-multiplier = multipliers[applicable_index]
-return math.ceil(inc_price * multiplier / 10.0) * 10  # Round up to nearest 10
-
-# Function to calculate bottle price using bracketed multipliers
-def calculate_bottle_price(luc_inc):
-    if np.isnan(luc_inc) or luc_inc <= 0:
+def calculate_bottle_price(luc):
+    if np.isnan(luc) or luc <= 0:
         return "N/A"
-    idx = np.searchsorted(price_tiers, luc_inc, side="right") - 1
+    inc_price = luc * 1.1
+    idx = np.searchsorted(price_tiers, luc, side="right") - 1
     idx = min(idx, len(bottle_multipliers) - 1)
     multiplier = bottle_multipliers[idx]
-    result = np.ceil(luc_inc * multiplier / 10) * 10  # Excel ROUNDUP(..., -1)
+    result = math.ceil(inc_price * multiplier / 10.0) * 10
     return int(result)
 
-df["inc_price"] = df["bottle_price"] * 1.1  # LUC to Inc Price
-df["calculated_bottle_price"] = df["inc_price"].apply(calculate_bottle_price)
+df["calculated_bottle_price"] = df["bottle_price"].apply(calculate_bottle_price)
 
 if "shortlist" not in st.session_state:
     st.session_state.shortlist = set()
 
-# --- TOP FILTERS ---
 with st.container():
     cols = st.columns([3, 2, 2])
     with cols[0]:
@@ -102,16 +90,15 @@ with st.container():
     with cols[2]:
         type_tags = st.multiselect("Wine Type", ["Red", "White", "Rosé", "Sparkling", "Fortified"])
 
-# --- SIDEBAR ADVANCED FILTERS ---
 with st.sidebar:
     st.header("⚙️ Advanced Filters")
-    
+
     under_50 = st.checkbox("💲 Show only wines under $50")
     over_500 = st.checkbox("💰 Show only wines over $500")
-    
-    max_price = float(df["bottle_price"].max()) + 10  # add buffer for slider headroom
-    price_min, price_max = st.slider("Price Range",0.0,max_price,(0.0, max_price))
-    
+
+    max_price = float(df["bottle_price"].max()) + 10
+    price_min, price_max = st.slider("Price Range", 0.0, max_price, (0.0, max_price))
+
     pretty_varietals = sorted(set(v.title() for v in df["clean_varietal"].unique()))
     varietal_selection = st.multiselect("Varietal", pretty_varietals)
     producers = st.multiselect("Producer", sorted(df["producer"].unique()))
@@ -145,7 +132,6 @@ if suppliers:
 if type_tags:
     filtered_df = filtered_df[filtered_df["wine_type"].isin(type_tags)]
 
-
 if sort_option == "Producer A-Z":
     filtered_df = filtered_df.sort_values("sort_name")
 elif sort_option == "Producer Z-A":
@@ -155,10 +141,8 @@ elif sort_option == "Price Low-High":
 elif sort_option == "Price High-Low":
     filtered_df = filtered_df.sort_values("bottle_price", ascending=False)
 
-# Show how many wines matched
 st.markdown(f"**Displaying {len(filtered_df)} of {len(df)} wines**")
 
-# Display Grid - Responsive
 st.markdown("""
 <style>
 .grid {
@@ -218,7 +202,6 @@ st.markdown("<div class='grid'>", unsafe_allow_html=True)
 for i, row in filtered_df.iterrows():
     is_shortlisted = row['wine_id'] in st.session_state.shortlist
 
-    # Display wine card
     st.markdown(f"""
     <div class='card'>
         <div class='card-title'>{row['producer']} {row['wine_name']}</div>
@@ -232,7 +215,6 @@ for i, row in filtered_df.iterrows():
 
     """, unsafe_allow_html=True)
 
-    # Unique shortlist button
     button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
     if st.button(button_label, key=f"shortlist_btn_{row['wine_id']}_{i}"):
         if is_shortlisted:
@@ -242,7 +224,6 @@ for i, row in filtered_df.iterrows():
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# Shortlist summary
 with st.sidebar:
     if st.session_state.shortlist:
         st.markdown("### 📝 Shortlist")
@@ -250,7 +231,7 @@ with st.sidebar:
             wine = df[df['wine_id'] == sid].iloc[0]
             st.write(f"{wine['producer']} {wine['wine_name']} ({wine['vintage']}) – ${wine['bottle_price']:.2f}")
         st.button("Clear Shortlist", on_click=lambda: st.session_state.shortlist.clear())
-# Export shortlist to CSV
+
         columns_to_export = [
             "wine_name", "vintage", "clean_varietal", "region", "producer", "supplier", "bottle_price"
         ]
@@ -270,11 +251,8 @@ with st.sidebar:
         export_csv = export_df.to_csv(index=False)
 
         st.download_button(
-            label="📥 Download Shortlist (CSV)",
+            label="📅 Download Shortlist (CSV)",
             data=export_csv,
             file_name="wine_shortlist.csv",
             mime="text/csv"
         )
-
-       
-
