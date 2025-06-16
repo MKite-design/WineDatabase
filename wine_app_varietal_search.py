@@ -104,6 +104,51 @@ df["calculated_bottle_price"] = df["bottle_price"].apply(calculate_bottle_price)
 df["calculated_glass_price"] = df["bottle_price"].apply(calculate_glass_price)
 df["calculated_takeaway_price"] = df["bottle_price"].apply(calculate_takeaway_price)
 
+# PAGE NAVIGATION
+page = st.sidebar.radio("Select Page", ["🍷 Wine Browser", "✏️ Edit Wines"])
+
+if page == "🍷 Wine Browser":
+    # all existing filtering + display logic remains here (unchanged)
+    pass
+
+elif page == "✏️ Edit Wines":
+    st.header("✏️ Edit Existing Wine")
+    df["display_name"] = df["wine_name"] + " (" + df["producer"] + ")"
+    wine_to_edit = st.selectbox("Select wine", df["display_name"].tolist())
+    selected_row = df[df["display_name"] == wine_to_edit]
+    if not selected_row.empty:
+        selected_row = selected_row.iloc[0]
+        with st.form("edit_wine_form"):
+            new_name = st.text_input("Wine Name", selected_row["wine_name"])
+            new_vintage = st.text_input("Vintage", selected_row["vintage"])
+            new_varietal = st.text_input("Varietal", selected_row["varietal"])
+            new_region = st.text_input("Region", selected_row["region"])
+            new_producer = st.text_input("Producer", selected_row["producer"])
+            new_price = st.number_input("LUC Price ($)", value=selected_row["bottle_price"], step=0.1)
+
+            submitted = st.form_submit_button("Update Wine")
+            if submitted:
+                conn = sqlite3.connect("wine_supplier_with_producer.db")
+                cursor = conn.cursor()
+                cursor.execute("""
+                    UPDATE wines
+                    SET wine_name = ?, vintage = ?, varietal = ?, region = ?, producer = ?
+                    WHERE wine_id = ?
+                """, (new_name, new_vintage, new_varietal, new_region, new_producer, selected_row["wine_id"]))
+
+                cursor.execute("""
+                    UPDATE wine_prices
+                    SET bottle_price = ?
+                    WHERE wine_id = ?
+                """, (new_price, selected_row["wine_id"]))
+
+                conn.commit()
+                conn.close()
+                st.success("✅ Wine updated successfully!")
+                st.cache_data.clear()
+    else:
+        st.warning("⚠️ Could not find selected wine.")
+
 if "shortlist" not in st.session_state:
     st.session_state.shortlist = set()
 
@@ -251,44 +296,6 @@ for i, row in filtered_df.iterrows():
             st.session_state.shortlist.add(row['wine_id'])
 
 st.markdown("</div>", unsafe_allow_html=True)
-
-# 🛠️ Add edit section here:
-with st.expander("✏️ Edit Existing Wine"):
-    wine_to_edit = st.selectbox("Select wine", df["wine_name"] + " (" + df["producer"] + ")", index=0)
-    selected_row = df[df["wine_name"] + " (" + df["producer"] + ")" == wine_to_edit].iloc[0]
-
-    with st.form("edit_wine_form"):
-        new_name = st.text_input("Wine Name", selected_row["wine_name"])
-        new_vintage = st.text_input("Vintage", selected_row["vintage"])
-        new_varietal = st.text_input("Varietal", selected_row["varietal"])
-        new_region = st.text_input("Region", selected_row["region"])
-        new_producer = st.text_input("Producer", selected_row["producer"])
-        new_price = st.number_input("LUC Price ($)", value=selected_row["bottle_price"], step=0.1)
-
-        submitted = st.form_submit_button("Update Wine")
-
-        if submitted:
-            conn = sqlite3.connect("wine_supplier_with_producer.db")
-            cursor = conn.cursor()
-
-            cursor.execute("""
-                UPDATE wines
-                SET wine_name = ?, vintage = ?, varietal = ?, region = ?, producer = ?
-                WHERE wine_id = ?
-            """, (new_name, new_vintage, new_varietal, new_region, new_producer, selected_row["wine_id"]))
-
-            cursor.execute("""
-                UPDATE wine_prices
-                SET bottle_price = ?
-                WHERE wine_id = ?
-            """, (new_price, selected_row["wine_id"]))
-
-            conn.commit()
-            conn.close()
-
-            st.success("✅ Wine updated successfully!")
-            st.cache_data.clear()
-
 
 with st.sidebar:
     if st.session_state.shortlist:
