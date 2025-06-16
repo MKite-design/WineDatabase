@@ -5,17 +5,20 @@ from unidecode import unidecode
 import math
 import numpy as np
 import gspread
-import json
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2.service_account import Credentials
 
-creds_dict = json.loads(st.secrets["gcp_service_account"])
+# Authorize with Google Sheets using secrets.toml
+gcp_creds = st.secrets["gcp_service_account"]
+scoped_creds = Credentials.from_service_account_info(
+    gcp_creds,
+    scopes=["https://www.googleapis.com/auth/spreadsheets"]
+)
+gc = gspread.authorize(scoped_creds)
 
-scope = [
-    "https://spreadsheets.google.com/feeds",
-    "https://www.googleapis.com/auth/drive"
-]
-creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-gc = gspread.authorize(creds)
+# Replace with your actual Google Sheet name or URL
+SHEET_NAME = "https://docs.google.com/spreadsheets/d/1H6guq90INPuSk49BfweRJ8zpPUCBLmHLNtVpVX-vThU/edit?gid=0#gid=0"
+worksheet = gc.open(SHEET_NAME).sheet1  # You can also use .worksheet("Sheet2") if needed
+
 
 st.set_page_config(layout="wide")
 st.title("🍇 Wine Listings")
