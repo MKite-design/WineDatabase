@@ -359,16 +359,18 @@ for i, row in filtered_df.iterrows():
     
         """, unsafe_allow_html=True)
     
- # 🔘 Replace button with instant checkbox
-    toggle = st.checkbox("Shortlist", value=is_shortlisted, key=f"shortlist_checkbox_{wine_id}_{i}")
-    if toggle and not is_shortlisted:
-        st.session_state.shortlist.add(row['wine_id'])
-    elif not toggle and is_shortlisted:
-        st.session_state.shortlist.remove(row['wine_id'])
+    # 🔘 Show button (outside of st.markdown!)
+    button_label = "✅ Shortlisted" if is_shortlisted else "➕ Shortlist"
+    if st.button(button_label, key=f"shortlist_btn_{row['wine_id']}_{i}"):
+        if is_shortlisted:
+            st.session_state.shortlist.remove(row['wine_id'])
+        else:
+            st.session_state.shortlist.add(row['wine_id'])
 
+    # ✅ CLOSE the div after button
     st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("</div>", unsafe_allow_html=True)  # Close grid
+st.markdown("</div>", unsafe_allow_html=True)  # Close grid container
     
 with st.sidebar:
     if st.session_state.shortlist:
