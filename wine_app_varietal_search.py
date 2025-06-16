@@ -222,9 +222,9 @@ with tab1:
         st.markdown("**Price Range (LUC $)**")
             col_min, col_max = st.columns(2)
             with col_min:
-            price_min = st.number_input("Min", min_value=0.0, value=0.0, step=1.0, format="%.2f")
+                price_min = st.number_input("Min", min_value=0.0, value=0.0, step=1.0, format="%.2f")
             with col_max:
-            price_max = st.number_input("Max", min_value=0.0, value=float(df["bottle_price"].max() + 10), step=1.0, format="%.2f")
+                price_max = st.number_input("Max", min_value=0.0, value=float(df["bottle_price"].max() + 10), step=1.0, format="%.2f")
 
     
         pretty_varietals = sorted(set(v.title() for v in df["clean_varietal"].unique()))
