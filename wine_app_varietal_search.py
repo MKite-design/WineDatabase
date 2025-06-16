@@ -10,6 +10,33 @@ from google.oauth2.service_account import Credentials
 st.set_page_config(layout="wide")
 st.title("🍇 Wine Listings")
 
+# Authorize with Google Sheets using secrets.toml
+gcp_creds = st.secrets["gcp_service_account"]
+    
+# Authenticate with proper scopes
+scoped_creds = Credentials.from_service_account_info(
+st.secrets["gcp_service_account"],
+scopes=["https://www.googleapis.com/auth/spreadsheets", 
+"https://www.googleapis.com/auth/drive"])
+            
+gc = gspread.authorize(scoped_creds)
+            
+            
+# Use the key from your sheet URL
+sheet_key = "1H6guq90INPuSk49BfweRJ8zpPUCBLmHLNtVpVX-vThU"
+worksheet = gc.open_by_key(sheet_key).sheet1
+            
+            
+# This pulls all rows of the Google Sheet as a list of dictionaries
+data = worksheet.get_all_records()
+            
+# Convert it into a pandas DataFrame
+df_sheet = pd.DataFrame(data)
+            
+# Ensure all values in 'vintage' are strings for Arrow compatibility
+if 'vintage' in df_sheet.columns:
+df_sheet['vintage'] = df_sheet['vintage'].astype(str)
+
 # Load cleaned varietal mapping from CSV
 varietal_map_df = pd.read_csv("raw_varietals_for_cleaning.csv").dropna(subset=["varietal", "Clean Varietal"])
 varietal_map = dict(zip(varietal_map_df["varietal"].str.strip(), varietal_map_df["Clean Varietal"].str.strip()))
@@ -129,34 +156,6 @@ with tab1:
         pass
     
     elif page == "✏️ Edit Wines":
-
-    # Authorize with Google Sheets using secrets.toml
-    gcp_creds = st.secrets["gcp_service_account"]
-    
-    # Authenticate with proper scopes
-    scoped_creds = Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"],
-    scopes=["https://www.googleapis.com/auth/spreadsheets", 
-    "https://www.googleapis.com/auth/drive"])
-            
-    gc = gspread.authorize(scoped_creds)
-            
-            
-    # Use the key from your sheet URL
-    sheet_key = "1H6guq90INPuSk49BfweRJ8zpPUCBLmHLNtVpVX-vThU"
-    worksheet = gc.open_by_key(sheet_key).sheet1
-            
-            
-    # This pulls all rows of the Google Sheet as a list of dictionaries
-    data = worksheet.get_all_records()
-            
-    # Convert it into a pandas DataFrame
-     df_sheet = pd.DataFrame(data)
-            
-    # Ensure all values in 'vintage' are strings for Arrow compatibility
-    if 'vintage' in df_sheet.columns:
-    df_sheet['vintage'] = df_sheet['vintage'].astype(str)
-    
         st.header("✏️ Edit Existing Wine")
         df["display_name"] = df["wine_name"] + " (" + df["producer"] + ")"
         wine_to_edit = st.selectbox("Select wine", df["display_name"].tolist())
