@@ -4,6 +4,18 @@ import sqlite3
 from unidecode import unidecode
 import math
 import numpy as np
+import gspread
+import json
+from oauth2client.service_account import ServiceAccountCredentials
+
+creds_dict = json.loads(st.secrets["gcp_service_account"])
+
+scope = [
+    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/drive"
+]
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+gc = gspread.authorize(creds)
 
 st.set_page_config(layout="wide")
 st.title("🍇 Wine Listings")
